@@ -77,6 +77,26 @@ class DataFrameEncoder:
         self.fit(df, target)
         return self.transform(df)
 
+class DataFrameColumnCombiner:
+    def __init__(self, combine_columns, copy=False):
+        self.combine_columns = combine_columns
+        self.copy = copy
+
+    def combine_columns(self, df, cols):
+        return df[cols].apply(lambda x: '_'.join([str(s) for s in x]), axis=1)
+
+    def transform(df):
+        if copy: dft = df.copy()
+        else: dft = df
+        if type(self.combine_columns) is list:
+            for cols in self.combine_columns:
+                col_name = '_'.join(cols)
+                dft[col_name] = self.combine_columns(dft, cols)
+        elif type(self.combite_columns) is dict:
+            for col_name, cols in self.combine_columns.items():
+                dft[col_name] = self.combine_columns(dft, cols)
+        return dft
+
 def get_high_correlation_cols(df, corrThresh=0.9):
     numeric_cols = df._get_numeric_data().columns
     corr_matrix = df.loc[:, numeric_cols].corr().abs()
@@ -110,3 +130,10 @@ def get_null_columns(df, threshold=0.9):
 def get_big_top_value_columns(df, threshold=0.9):
     return [col for col in df.columns if 
             df[col].value_counts(dropna=False, normalize=True).values[0] > 0.9]
+
+def get_non_numeric_columns(df):
+    num_cols = df._get_numberic_data().columns
+    return [col for col in df.columns if col not in num_cols]
+
+
+
