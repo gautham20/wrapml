@@ -1,8 +1,10 @@
+import shutil
+from pathlib import Path
+from typing import Any, Generator, Optional, Union
+
 import torch
 import torch.nn.functional as F
 from torch.optim.optimizer import Optimizer
-
-from typing import Optional, Generator, Union, Any
 
 from wrapml.utils import if_none
 
@@ -10,6 +12,14 @@ from wrapml.utils import if_none
 
 BN_TYPES = (torch.nn.BatchNorm1d, torch.nn.BatchNorm2d, torch.nn.BatchNorm3d)
 
+
+def kaggle_load_timm_pretrained_models(models, pretrained_model_path='../input/timm-pretrained-efficientnet/efficientnet'):
+    # models = ['tf_efficientnet_b5_ra-9a3e5369.pth', 'tf_efficientnet_b5_ns-6f26d0cf.pth']
+    src_path = Path(pretrained_model_path)
+    model_path = Path(torch.hub.get_dir())/'checkpoints'
+    model_path.mkdir(exist_ok=True, parents=True)
+    for model in models:
+        shutil.copy(src_path/model, model_path/model)
 
 def _make_trainable(module: torch.nn.Module) -> None:
     """Unfreezes a given module.
@@ -146,5 +156,3 @@ def filter_params(module: torch.nn.Module,
         for child in children:
             for param in filter_params(module=child, train_bn=train_bn):
                 yield param
-
-
