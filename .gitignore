@@ -1,4 +1,10 @@
- 
+# ignore folders
+
+pretrained_models
+kaggle_downloads
+logs
+models
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
