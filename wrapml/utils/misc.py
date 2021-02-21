@@ -1,6 +1,7 @@
 import os
 import random
 from typing import Any
+import zipfile
 
 
 import numpy as np
@@ -48,23 +49,14 @@ def reduce_mem_usage(df, verbose=True):
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
     return df
 
-
-def freeze_until(model: Any, param_name: str = None) -> None:
-    """
-    Freeze model until param_name
-    Find the param_name from model.named_parameters()
-
-    Args:
-        model:
-        param_name:
-
-    """
-    found_name = False
-    for name, params in model.named_parameters():
-        if name == param_name:
-            found_name = True
-        params.requires_grad = found_name
-    return model
-
 def if_none(a, b):
     return b if a is None else a
+
+
+def zipdir(path, name):
+    # ziph is zipfile handle
+    ziph = zipfile.ZipFile(f'{name}.zip', 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+    ziph.close()

@@ -3,7 +3,7 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 
-from wrapml.image.utils import read_image
+from wrapml.utils import read_image
 
 class ImageClassificationDataset(Dataset):
     '''
